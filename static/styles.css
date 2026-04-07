@@ -256,6 +256,53 @@ input[type="range"] {
   font-size: 0.95rem;
 }
 
+.back-link {
+  display: inline-block;
+  margin-bottom: 8px;
+  color: #3730a3;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.summary-grid,
+.metric-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 12px;
+}
+
+.metric-value {
+  margin: 6px 0 0;
+  font-size: 1.45rem;
+  font-weight: 700;
+}
+
+.map-preview {
+  border: 1px dashed #cbd5e1;
+  border-radius: 12px;
+  background: #f8fafc;
+  padding: 14px;
+}
+
+.filter-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 240px));
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+select {
+  width: 100%;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 8px;
+  background: #fff;
+}
+
+a {
+  color: #1d4ed8;
+}
+
 @media (max-width: 640px) {
   .search-row {
     grid-template-columns: 1fr;

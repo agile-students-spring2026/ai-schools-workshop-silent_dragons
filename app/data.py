@@ -41,6 +41,11 @@ def load_schools(path: Path = SCHOOLS_PATH) -> list[School]:
 
 
 def to_school(row: dict[str, str]) -> School:
+    enrollment_raw = row.get("enrollment", "").strip()
+    absenteeism_raw = row.get("absenteeism_pct", "").strip()
+    outcomes_raw = row.get("outcomes_index", "").strip()
+    climate_raw = row.get("climate_index", "").strip()
+    advanced_raw = row.get("advanced_coursework_pct", "").strip()
     return School(
         school_id=row["school_id"],
         school_name=row["school_name"],
@@ -50,6 +55,13 @@ def to_school(row: dict[str, str]) -> School:
         state=row["state"],
         zip_code=row["zip_code"],
         school_type=row["school_type"],
+        grade_span=row.get("grade_span", "Unknown"),
+        enrollment=int(enrollment_raw) if enrollment_raw else None,
+        charter_status=row.get("charter_status", "traditional"),
+        absenteeism_pct=float(absenteeism_raw) if absenteeism_raw else None,
+        outcomes_index=float(outcomes_raw) if outcomes_raw else None,
+        climate_index=float(climate_raw) if climate_raw else None,
+        advanced_coursework_pct=float(advanced_raw) if advanced_raw else None,
     )
 
 

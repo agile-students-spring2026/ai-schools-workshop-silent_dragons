@@ -79,3 +79,43 @@ def test_search_invalid_audience_rejected() -> None:
     client = TestClient(app)
     response = client.get("/search?query=orlando&audience=student")
     assert response.status_code == 422
+
+
+def test_district_and_school_pages_render() -> None:
+    client = TestClient(app)
+    district_page = client.get("/district/CA-001")
+    school_page = client.get("/school/SCH-1002")
+    assert district_page.status_code == 200
+    assert "District overview" in district_page.text
+    assert school_page.status_code == 200
+    assert "School detail" in school_page.text
+
+
+def test_district_overview_endpoint_and_filters() -> None:
+    client = TestClient(app)
+    response = client.get("/districts/CA-001/overview?grade_band=high&school_type=High")
+    assert response.status_code == 200
+    payload = response.json()
+    assert payload["district_id"] == "CA-001"
+    assert payload["summary"]["parent"]
+    assert all(item["school_type"] == "High" for item in payload["schools"])
+    assert all("source_name" in metric for metric in payload["metrics"])
+
+
+def test_district_overview_not_found() -> None:
+    client = TestClient(app)
+    response = client.get("/districts/NOPE/overview")
+    assert response.status_code == 404
+
+
+def test_school_detail_endpoint_success_and_not_found() -> None:
+    client = TestClient(app)
+    ok_response = client.get("/schools/SCH-1002/detail")
+    assert ok_response.status_code == 200
+    payload = ok_response.json()
+    assert payload["school_id"] == "SCH-1002"
+    assert payload["fit_explanations"]["parent"]
+    assert payload["qa"]["compare_to_district"]["citations"]
+
+    not_found = client.get("/schools/NOPE/detail")
+    assert not_found.status_code == 404

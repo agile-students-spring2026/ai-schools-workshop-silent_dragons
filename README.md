@@ -8,6 +8,8 @@ The current app shell supports:
 - search by ZIP, city, district name, or school name
 - likely district suggestions for ZIP searches (instead of a single guaranteed assignment)
 - separate district and school result cards with plain-language summaries
+- district overview pages with source/year metric cards and school filters
+- school detail pages with grounded fit explanations and cited Q&A
 
 - graduation and proficiency performance
 - safety signals
@@ -50,6 +52,13 @@ Service URL: `http://127.0.0.1:8000`
 Web UI: `http://127.0.0.1:8000/`
 API docs: `http://127.0.0.1:8000/docs`
 
+### Quick visual test flow
+
+1. Open `/` and search for `10027` or `Palo Alto Unified`.
+2. Click a district card title to open `/district/{district_id}`.
+3. Use school filters (grade band + type) and verify school list updates.
+4. Click a school to open `/school/{school_id}` and review fit + Q&A panels.
+
 ## API Endpoints
 
 - `GET /health`
@@ -58,6 +67,9 @@ API docs: `http://127.0.0.1:8000/docs`
 - `GET /districts`
   - Query params include `top_k`, all weight params, `min_grad_rate`, `max_student_teacher_ratio`
 - `GET /districts/{district_id}/score`
+- `GET /districts/{district_id}/overview`
+  - Query params: `grade_band` (`all|elementary|middle|high`), `school_type` (`all|Elementary|Middle|High|Career`)
+- `GET /schools/{school_id}/detail`
 
 Example:
 

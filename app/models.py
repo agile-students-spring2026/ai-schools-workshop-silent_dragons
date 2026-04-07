@@ -42,6 +42,13 @@ class School:
     state: str
     zip_code: str
     school_type: str
+    grade_span: str
+    enrollment: int | None
+    charter_status: str
+    absenteeism_pct: float | None
+    outcomes_index: float | None
+    climate_index: float | None
+    advanced_coursework_pct: float | None
 
 
 @dataclass(frozen=True)

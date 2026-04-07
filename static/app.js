@@ -27,7 +27,7 @@ function renderResults(payload) {
             (item) => `
               <article class="result-card suggestion-card">
                 <div class="card-title-row">
-                  <h4>${item.district_name}</h4>
+                  <h4><a href="/district/${item.district_id}">${item.district_name}</a></h4>
                   <span class="pill">Likely #${item.likelihood_rank}</span>
                 </div>
                 <p class="card-subtitle">${item.state} • ${item.district_id}</p>
@@ -50,7 +50,7 @@ function renderResults(payload) {
             (district) => `
               <article class="result-card">
                 <div class="card-title-row">
-                  <h4>${district.title}</h4>
+                  <h4><a href="/district/${district.district_id}">${district.title}</a></h4>
                   <span class="pill">District</span>
                 </div>
                 <p class="card-subtitle">${district.subtitle}</p>
@@ -78,7 +78,7 @@ function renderResults(payload) {
             (school) => `
               <article class="result-card">
                 <div class="card-title-row">
-                  <h4>${school.title}</h4>
+                  <h4><a href="/school/${school.school_id}">${school.title}</a></h4>
                   <span class="pill">School</span>
                 </div>
                 <p class="card-subtitle">${school.subtitle}</p>

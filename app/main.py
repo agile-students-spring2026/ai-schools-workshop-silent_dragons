@@ -8,6 +8,7 @@ from fastapi.staticfiles import StaticFiles
 
 from app.data import load_districts, load_schools, load_zip_district_suggestions
 from app.models import Preferences
+from app.overview import district_overview_payload, school_detail_payload
 from app.search import search_catalog
 from app.service import rank_districts
 
@@ -19,6 +20,18 @@ app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
 @app.get("/")
 def homepage() -> FileResponse:
     return FileResponse(STATIC_DIR / "index.html")
+
+
+@app.get("/district/{district_id}")
+def district_page(district_id: str) -> FileResponse:
+    _ = district_id
+    return FileResponse(STATIC_DIR / "district.html")
+
+
+@app.get("/school/{school_id}")
+def school_page(school_id: str) -> FileResponse:
+    _ = school_id
+    return FileResponse(STATIC_DIR / "school.html")
 
 
 @app.get("/health")
@@ -84,3 +97,33 @@ def search(
         schools=schools,
         zip_suggestions=zip_suggestions,
     )
+
+
+@app.get("/districts/{district_id}/overview")
+def district_overview(
+    district_id: str,
+    grade_band: str = Query(default="all", pattern="^(all|elementary|middle|high)$"),
+    school_type: str = Query(default="all", pattern="^(all|Elementary|Middle|High|Career)$"),
+) -> dict:
+    try:
+        return district_overview_payload(
+            district_id=district_id,
+            districts=load_districts(),
+            schools=load_schools(),
+            grade_band=grade_band,
+            school_type=school_type,
+        )
+    except ValueError as error:
+        raise HTTPException(status_code=404, detail=str(error)) from error
+
+
+@app.get("/schools/{school_id}/detail")
+def school_detail(school_id: str) -> dict:
+    try:
+        return school_detail_payload(
+            school_id=school_id,
+            districts=load_districts(),
+            schools=load_schools(),
+        )
+    except ValueError as error:
+        raise HTTPException(status_code=404, detail=str(error)) from error

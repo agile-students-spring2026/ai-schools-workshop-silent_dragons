@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>District Overview</title>
+    <link rel="stylesheet" href="/static/styles.css" />
+  </head>
+  <body>
+    <main class="container">
+      <section class="hero">
+        <a class="back-link" href="/">← Back to search</a>
+        <p class="badge">District overview</p>
+        <h1 id="district_title">District</h1>
+        <p id="district_subtitle" class="subtitle">Loading district context...</p>
+      </section>
+
+      <section class="panel">
+        <h2>Grounded summary</h2>
+        <div class="summary-grid">
+          <article class="result-card">
+            <h3>Explain this district for a parent</h3>
+            <p id="summary_parent" class="card-summary">Loading...</p>
+          </article>
+          <article class="result-card">
+            <h3>Explain this district for a teacher</h3>
+            <p id="summary_educator" class="card-summary">Loading...</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="panel">
+        <div class="results-header">
+          <h2>Core district metrics</h2>
+          <p id="metric_count" class="status"></p>
+        </div>
+        <div id="district_metrics" class="metric-grid"></div>
+      </section>
+
+      <section class="panel">
+        <h2>Map preview</h2>
+        <div id="map_preview" class="map-preview"></div>
+      </section>
+
+      <section class="panel">
+        <div class="results-header">
+          <h2>Schools in this district</h2>
+          <p id="schools_count" class="status"></p>
+        </div>
+        <div class="filter-row">
+          <label>
+            Grade band
+            <select id="grade_band_filter">
+              <option value="all">All</option>
+              <option value="elementary">Elementary</option>
+              <option value="middle">Middle</option>
+              <option value="high">High</option>
+            </select>
+          </label>
+          <label>
+            School type
+            <select id="school_type_filter">
+              <option value="all">All</option>
+              <option value="Elementary">Elementary</option>
+              <option value="Middle">Middle</option>
+              <option value="High">High</option>
+              <option value="Career">Career</option>
+            </select>
+          </label>
+        </div>
+        <div id="schools_list"></div>
+      </section>
+    </main>
+    <script src="/static/district.js"></script>
+  </body>
+</html>

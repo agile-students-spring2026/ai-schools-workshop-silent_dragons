@@ -58,22 +58,33 @@ def test_to_school_casts_fields() -> None:
             "state": "YY",
             "zip_code": "12345",
             "school_type": "High",
+            "grade_span": "9-12",
+            "enrollment": "1200",
+            "charter_status": "traditional",
+            "absenteeism_pct": "11.2",
+            "outcomes_index": "74",
+            "climate_index": "69",
+            "advanced_coursework_pct": "47",
         }
     )
     assert school.school_name == "Sample High"
     assert school.zip_code == "12345"
+    assert school.grade_span == "9-12"
+    assert school.enrollment == 1200
 
 
 def test_load_schools_reads_csv(tmp_path: Path) -> None:
     file = tmp_path / "schools.csv"
     file.write_text(
-        "school_id,school_name,district_id,district_name,city,state,zip_code,school_type\n"
-        "SCH-2,School Name,YY-2,Sample District,Sample City,YY,12345,Middle\n",
+        "school_id,school_name,district_id,district_name,city,state,zip_code,school_type,"
+        "grade_span,enrollment,charter_status,absenteeism_pct,outcomes_index,climate_index,advanced_coursework_pct\n"
+        "SCH-2,School Name,YY-2,Sample District,Sample City,YY,12345,Middle,6-8,700,traditional,9.2,71,66,40\n",
         encoding="utf-8",
     )
     schools = load_schools(file)
     assert len(schools) == 1
     assert schools[0].district_id == "YY-2"
+    assert schools[0].enrollment == 700
 
 
 def test_to_zip_district_suggestion_casts_fields() -> None:
