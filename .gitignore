@@ -128,3 +128,6 @@ typings/
 # Python bytecode
 __pycache__/
 *.py[cod]
+
+# Local virtual environments
+.venv/
