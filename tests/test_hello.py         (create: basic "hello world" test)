@@ -1,0 +1,7 @@
+pyproject.toml:
+[tool.pytest]
+testpaths = ["tests"]
+
+tests/test_hello.py:
+def test_hello():
+    assert "hello" == "hello"
