@@ -9,7 +9,9 @@ def test_homepage_serves_html() -> None:
     client = TestClient(app)
     response = client.get("/")
     assert response.status_code == 200
-    assert "District Insight" in response.text
+    assert "Find your best-fit district and schools" in response.text
+    assert "Parent" in response.text
+    assert "Educator" in response.text
 
 
 def test_static_asset_served() -> None:
@@ -49,3 +51,31 @@ def test_get_single_district_score_not_found() -> None:
     response = client.get("/districts/NOPE/score")
     assert response.status_code == 404
     assert response.json()["detail"] == "District not found"
+
+
+def test_search_zip_returns_likely_districts_and_schools() -> None:
+    client = TestClient(app)
+    response = client.get("/search?query=10027&audience=parent")
+    assert response.status_code == 200
+    payload = response.json()
+    assert payload["intent"] == "zip"
+    assert len(payload["district_suggestions"]) >= 1
+    assert len(payload["districts"]) >= 1
+    assert "likely district options" in payload["helper_text"].lower()
+    first_suggestion = payload["district_suggestions"][0]
+    assert "source_name" in first_suggestion
+
+
+def test_search_school_name_returns_school_match() -> None:
+    client = TestClient(app)
+    response = client.get("/search?query=Scarsdale+High+School&audience=educator")
+    assert response.status_code == 200
+    payload = response.json()
+    assert payload["audience"] == "educator"
+    assert any("Scarsdale High School" in school["title"] for school in payload["schools"])
+
+
+def test_search_invalid_audience_rejected() -> None:
+    client = TestClient(app)
+    response = client.get("/search?query=orlando&audience=student")
+    assert response.status_code == 422

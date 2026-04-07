@@ -6,8 +6,9 @@ from fastapi import FastAPI, HTTPException, Query
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 
-from app.data import load_districts
+from app.data import load_districts, load_schools, load_zip_district_suggestions
 from app.models import Preferences
+from app.search import search_catalog
 from app.service import rank_districts
 
 app = FastAPI(title="District Insight API", version="0.1.0")
@@ -66,3 +67,20 @@ def get_district_score(district_id: str) -> dict:
         "state": matches[0].state,
         "score": rank_districts([matches[0]], Preferences(), top_k=1)[0]["score"],
     }
+
+
+@app.get("/search")
+def search(
+    query: str = Query(min_length=2),
+    audience: str = Query(default="parent", pattern="^(parent|educator)$"),
+) -> dict:
+    districts = load_districts()
+    schools = load_schools()
+    zip_suggestions = load_zip_district_suggestions()
+    return search_catalog(
+        query=query,
+        audience=audience,
+        districts=districts,
+        schools=schools,
+        zip_suggestions=zip_suggestions,
+    )

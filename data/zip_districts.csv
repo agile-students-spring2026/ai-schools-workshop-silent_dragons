@@ -1,0 +1,17 @@
+zip_code,district_id,likelihood_rank,why_it_matches,source_name,source_year
+10027,NY-114,1,Common commute pattern and similar metro area options.,NCES GRF-style ZIP linkage (workshop sample),2023
+10027,NJ-208,2,Regional access with strong transit options.,NCES GRF-style ZIP linkage (workshop sample),2023
+10027,MD-145,3,Often compared by families looking for high-performing districts.,NCES GRF-style ZIP linkage (workshop sample),2023
+94301,CA-001,1,Primary district serving this ZIP and nearby neighborhoods.,NCES GRF-style ZIP linkage (workshop sample),2023
+94304,CA-001,1,Primary district serving this ZIP and nearby neighborhoods.,NCES GRF-style ZIP linkage (workshop sample),2023
+08540,NJ-208,1,Core attendance area and surrounding neighborhoods.,NCES GRF-style ZIP linkage (workshop sample),2023
+98004,WA-023,1,Core attendance area and nearby zones.,NCES GRF-style ZIP linkage (workshop sample),2023
+98008,WA-023,1,Core attendance area and nearby zones.,NCES GRF-style ZIP linkage (workshop sample),2023
+32801,FL-155,1,District commonly associated with this ZIP.,NCES GRF-style ZIP linkage (workshop sample),2023
+22030,VA-340,1,District commonly associated with this ZIP.,NCES GRF-style ZIP linkage (workshop sample),2023
+78746,TX-201,1,District commonly associated with this ZIP.,NCES GRF-style ZIP linkage (workshop sample),2023
+10583,NY-114,1,Core local district for this ZIP area.,NCES GRF-style ZIP linkage (workshop sample),2023
+20817,MD-145,1,Common district serving neighborhoods in this ZIP.,NCES GRF-style ZIP linkage (workshop sample),2023
+20850,MD-145,1,Common district serving neighborhoods in this ZIP.,NCES GRF-style ZIP linkage (workshop sample),2023
+80111,CO-042,1,Frequently mapped district for this ZIP in metro area matching.,NCES GRF-style ZIP linkage (workshop sample),2023
+46032,IN-073,1,Local district commonly associated with this ZIP.,NCES GRF-style ZIP linkage (workshop sample),2023

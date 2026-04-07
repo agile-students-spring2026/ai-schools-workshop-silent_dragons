@@ -1,0 +1,26 @@
+school_id,school_name,district_id,district_name,city,state,zip_code,school_type
+SCH-1001,Jordan Middle School,CA-001,Palo Alto Unified,Palo Alto,CA,94301,Middle
+SCH-1002,Gunn High School,CA-001,Palo Alto Unified,Palo Alto,CA,94304,High
+SCH-1003,Scarsdale High School,NY-114,Scarsdale Union Free School District,Scarsdale,NY,10583,High
+SCH-1004,Fox Meadow School,NY-114,Scarsdale Union Free School District,Scarsdale,NY,10583,Elementary
+SCH-1005,Bellevue High School,WA-023,Bellevue School District,Bellevue,WA,98004,High
+SCH-1006,Interlake High School,WA-023,Bellevue School District,Bellevue,WA,98008,High
+SCH-1007,Cherry Creek High School,CO-042,Cherry Creek School District,Greenwood Village,CO,80111,High
+SCH-1008,Campus Middle School,CO-042,Cherry Creek School District,Cherry Hills Village,CO,80113,Middle
+SCH-1009,Princeton High School,NJ-208,Princeton Public Schools,Princeton,NJ,08540,High
+SCH-1010,Johnson Park School,NJ-208,Princeton Public Schools,Princeton,NJ,08540,Elementary
+SCH-1011,Westlake High School,TX-201,Eanes ISD,Austin,TX,78746,High
+SCH-1012,Cedar Creek Elementary,TX-201,Eanes ISD,Austin,TX,78738,Elementary
+SCH-1013,Orange Technical College,FL-155,Orange County Public Schools,Orlando,FL,32801,Career
+SCH-1014,Olympia High School,FL-155,Orange County Public Schools,Orlando,FL,32835,High
+SCH-1015,Whitman High School,MD-145,Montgomery County Public Schools,Bethesda,MD,20817,High
+SCH-1016,Richard Montgomery High School,MD-145,Montgomery County Public Schools,Rockville,MD,20850,High
+SCH-1017,Fairfax High School,VA-340,Fairfax County Public Schools,Fairfax,VA,22030,High
+SCH-1018,Oakton High School,VA-340,Fairfax County Public Schools,Vienna,VA,22181,High
+SCH-1019,Minnetonka High School,MN-033,Minnetonka Public Schools,Minnetonka,MN,55345,High
+SCH-1020,Carmel High School,IN-073,Carmel Clay Schools,Carmel,IN,46032,High
+SCH-1021,Lower Merion High School,PA-222,Lower Merion School District,Ardmore,PA,19003,High
+SCH-1022,Dublin Coffman High School,OH-051,Dublin City Schools,Dublin,OH,43017,High
+SCH-1023,Blue Valley North High School,KS-090,Blue Valley Schools,Overland Park,KS,66213,High
+SCH-1024,Scottsdale Arcadia High School,AZ-271,Scottsdale Unified School District,Scottsdale,AZ,85251,High
+SCH-1025,Wake STEM Early College High School,NC-077,Wake County Public School System,Raleigh,NC,27610,High

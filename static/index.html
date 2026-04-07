@@ -3,38 +3,61 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>District Insight</title>
+    <title>District Insight Search</title>
     <link rel="stylesheet" href="/static/styles.css" />
   </head>
   <body>
     <main class="container">
       <section class="hero">
-        <p class="badge">School District Decision Support</p>
-        <h1>District Insight</h1>
-        <p class="subtitle">Find school districts that best match your priorities.</p>
+        <p class="badge">School District Evaluation</p>
+        <h1>Find your best-fit district and schools</h1>
+        <p class="subtitle">
+          Choose your audience, then search by ZIP, city, district name, or school name.
+        </p>
       </section>
 
       <section class="panel">
-        <h2>Filters</h2>
-        <div class="grid">
-          <label>Top results <input id="top_k" type="number" min="1" max="20" value="5" /></label>
-          <label>Min grad rate <input id="min_grad_rate" type="number" min="0" max="100" value="85" /></label>
-          <label>Max class ratio <input id="max_student_teacher_ratio" type="number" min="1" max="100" value="20" /></label>
+        <h2>Who are you searching for?</h2>
+        <div class="audience-grid">
+          <button class="audience-btn active" id="audience_parent" data-audience="parent">
+            Parent
+            <span>Family-focused guidance and plain language summaries.</span>
+          </button>
+          <button class="audience-btn" id="audience_educator" data-audience="educator">
+            Educator
+            <span>Instruction-focused context and district comparison support.</span>
+          </button>
         </div>
       </section>
 
       <section class="panel">
-        <h2>Priority Weights</h2>
-        <div class="grid" id="weights"></div>
-        <button id="search_btn">Rank Districts</button>
+        <h2>Search</h2>
+        <label class="search-label" for="query">
+          Try: <strong>10027</strong>, <strong>Orlando</strong>,
+          <strong>Palo Alto Unified</strong>, or <strong>Scarsdale High School</strong>
+        </label>
+        <div class="search-row">
+          <input
+            id="query"
+            type="text"
+            placeholder="Enter ZIP, city, district, or school"
+            autocomplete="off"
+          />
+          <button id="search_btn">Search</button>
+        </div>
+        <p id="helper_text" class="helper-text">
+          Start with a ZIP, city, district, or school name.
+        </p>
       </section>
 
       <section class="panel">
         <div class="results-header">
           <h2>Results</h2>
-          <p id="results_count">0 districts</p>
+          <p id="results_count">No search yet</p>
         </div>
-        <div id="results"></div>
+        <div id="results">
+          <p class="status">Search to see district and school matches.</p>
+        </div>
       </section>
     </main>
     <script src="/static/app.js"></script>

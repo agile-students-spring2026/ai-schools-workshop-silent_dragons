@@ -30,3 +30,25 @@ class Preferences:
     class_size_weight: float = 0.05
     min_grad_rate: float = 0.0
     max_student_teacher_ratio: float = 100.0
+
+
+@dataclass(frozen=True)
+class School:
+    school_id: str
+    school_name: str
+    district_id: str
+    district_name: str
+    city: str
+    state: str
+    zip_code: str
+    school_type: str
+
+
+@dataclass(frozen=True)
+class ZipDistrictSuggestion:
+    zip_code: str
+    district_id: str
+    likelihood_rank: int
+    why_it_matches: str
+    source_name: str = "Unknown source"
+    source_year: int | None = None

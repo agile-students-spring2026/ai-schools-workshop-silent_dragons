@@ -1,87 +1,147 @@
-const WEIGHT_FIELDS = [
-  ["academics_weight", "Academics", 0.25],
-  ["safety_weight", "Safety", 0.2],
-  ["affordability_weight", "Affordability", 0.15],
-  ["diversity_weight", "Diversity", 0.1],
-  ["special_ed_weight", "Special Ed", 0.15],
-  ["teacher_support_weight", "Teacher Support", 0.1],
-  ["class_size_weight", "Class Size", 0.05],
-];
+let selectedAudience = "parent";
 
-function renderWeightInputs() {
-  const root = document.getElementById("weights");
-  WEIGHT_FIELDS.forEach(([id, label, value]) => {
-    const wrapper = document.createElement("label");
-    wrapper.className = "weight-row";
-    wrapper.innerHTML = `
-      <div class="weight-label-row">
-        <span>${label}</span>
-        <span class="weight-value" id="${id}_value">${Number(value).toFixed(2)}</span>
-      </div>
-      <input id="${id}" type="range" min="0" max="1" step="0.01" value="${value}" />
-    `;
-    root.appendChild(wrapper);
-
-    const input = document.getElementById(id);
-    input.addEventListener("input", () => {
-      document.getElementById(`${id}_value`).textContent = Number(input.value).toFixed(2);
-    });
-  });
-}
-
-function readParams() {
-  const params = new URLSearchParams();
-  params.set("top_k", document.getElementById("top_k").value);
-  params.set("min_grad_rate", document.getElementById("min_grad_rate").value);
-  params.set(
-    "max_student_teacher_ratio",
-    document.getElementById("max_student_teacher_ratio").value
-  );
-  WEIGHT_FIELDS.forEach(([id]) => params.set(id, document.getElementById(id).value));
-  return params;
-}
-
-function renderResults(results) {
+function renderResults(payload) {
   const root = document.getElementById("results");
-  document.getElementById("results_count").textContent = `${results.length} districts`;
-  if (!results.length) {
-    root.innerHTML = `<p class="status">No districts matched your constraints.</p>`;
+
+  const districtCount = payload.districts.length;
+  const schoolCount = payload.schools.length;
+  const suggestionCount = payload.district_suggestions.length;
+
+  document.getElementById("results_count").textContent =
+    `${districtCount} district matches • ${schoolCount} school matches`;
+  document.getElementById("helper_text").textContent = payload.helper_text;
+
+  if (!districtCount && !schoolCount && !suggestionCount) {
+    root.innerHTML =
+      `<p class="status">No matches yet. Try a ZIP code, a city, or a full district/school name.</p>`;
     return;
   }
-  root.innerHTML = results
-    .map(
-      (district) =>
-        `<article class="district-card">
-          <div class="district-title">
-            <span>${district.district_name}</span>
-            <span>${district.state}</span>
-          </div>
-          <div class="district-meta">District ID: ${district.district_id}</div>
-          <div class="score-row">
-            <span class="score-pill">${district.score}</span>
-            <div class="score-bar"><div class="score-fill" style="width:${district.score}%"></div></div>
-          </div>
-        </article>`
-    )
-    .join("");
+
+  const suggestionMarkup = suggestionCount
+    ? `
+      <section class="results-group">
+        <h3>Likely districts for this ZIP</h3>
+        <p class="group-help">ZIP matches are estimates, not guaranteed assignments.</p>
+        ${payload.district_suggestions
+          .map(
+            (item) => `
+              <article class="result-card suggestion-card">
+                <div class="card-title-row">
+                  <h4>${item.district_name}</h4>
+                  <span class="pill">Likely #${item.likelihood_rank}</span>
+                </div>
+                <p class="card-subtitle">${item.state} • ${item.district_id}</p>
+                <p class="card-summary">${item.why_it_matches}</p>
+                <p class="card-meta">Source: ${item.source_name}${item.source_year ? ` (${item.source_year})` : ""}</p>
+              </article>
+            `
+          )
+          .join("")}
+      </section>
+    `
+    : "";
+
+  const districtMarkup = districtCount
+    ? `
+      <section class="results-group">
+        <h3>Matching districts</h3>
+        ${payload.districts
+          .map(
+            (district) => `
+              <article class="result-card">
+                <div class="card-title-row">
+                  <h4>${district.title}</h4>
+                  <span class="pill">District</span>
+                </div>
+                <p class="card-subtitle">${district.subtitle}</p>
+                <p class="card-summary">${district.summary}</p>
+                <p class="card-meta">Coming soon: ${district.plain_language_metrics.join(" • ")}</p>
+              </article>
+            `
+          )
+          .join("")}
+      </section>
+    `
+    : `
+      <section class="results-group">
+        <h3>Matching districts</h3>
+        <p class="status">No district matches for this search yet.</p>
+      </section>
+    `;
+
+  const schoolMarkup = schoolCount
+    ? `
+      <section class="results-group">
+        <h3>Matching schools</h3>
+        ${payload.schools
+          .map(
+            (school) => `
+              <article class="result-card">
+                <div class="card-title-row">
+                  <h4>${school.title}</h4>
+                  <span class="pill">School</span>
+                </div>
+                <p class="card-subtitle">${school.subtitle}</p>
+                <p class="card-summary">${school.summary}</p>
+                <p class="card-meta">District: ${school.district_name}</p>
+              </article>
+            `
+          )
+          .join("")}
+      </section>
+    `
+    : `
+      <section class="results-group">
+        <h3>Matching schools</h3>
+        <p class="status">No school matches for this search yet.</p>
+      </section>
+    `;
+
+  root.innerHTML = `${suggestionMarkup}${districtMarkup}${schoolMarkup}`;
 }
 
 async function runSearch() {
+  const query = document.getElementById("query").value.trim();
   const root = document.getElementById("results");
-  root.innerHTML = `<p class="status">Loading districts...</p>`;
-  const query = readParams();
+  if (!query) {
+    root.innerHTML = `<p class="status">Please enter a ZIP, city, district, or school name.</p>`;
+    document.getElementById("results_count").textContent = "No search yet";
+    return;
+  }
+
+  root.innerHTML = `<p class="status">Searching districts and schools...</p>`;
   try {
-    const response = await fetch(`/districts?${query.toString()}`);
+    const params = new URLSearchParams({ query, audience: selectedAudience });
+    const response = await fetch(`/search?${params.toString()}`);
     if (!response.ok) {
       throw new Error("Request failed");
     }
     const payload = await response.json();
-    renderResults(payload.results);
+    renderResults(payload);
   } catch (_error) {
-    root.innerHTML = `<p class="status">Unable to load results. Please try again.</p>`;
+    root.innerHTML = `<p class="status">Unable to load results right now. Please try again.</p>`;
   }
 }
 
-renderWeightInputs();
+function wireAudienceButtons() {
+  const buttons = [...document.querySelectorAll(".audience-btn")];
+  buttons.forEach((button) => {
+    button.addEventListener("click", () => {
+      selectedAudience = button.dataset.audience;
+      buttons.forEach((item) => item.classList.remove("active"));
+      button.classList.add("active");
+      document.getElementById("helper_text").textContent =
+        selectedAudience === "parent"
+          ? "Parent mode selected. Search by ZIP, city, district, or school."
+          : "Educator mode selected. Search by ZIP, city, district, or school.";
+    });
+  });
+}
+
+wireAudienceButtons();
 document.getElementById("search_btn").addEventListener("click", runSearch);
-runSearch();
+document.getElementById("query").addEventListener("keydown", (event) => {
+  if (event.key === "Enter") {
+    runSearch();
+  }
+});
