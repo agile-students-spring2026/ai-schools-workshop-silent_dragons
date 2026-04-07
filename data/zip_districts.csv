@@ -15,3 +15,15 @@ zip_code,district_id,likelihood_rank,why_it_matches,source_name,source_year
 20850,MD-145,1,Common district serving neighborhoods in this ZIP.,NCES GRF-style ZIP linkage (workshop sample),2023
 80111,CO-042,1,Frequently mapped district for this ZIP in metro area matching.,NCES GRF-style ZIP linkage (workshop sample),2023
 46032,IN-073,1,Local district commonly associated with this ZIP.,NCES GRF-style ZIP linkage (workshop sample),2023
+02445,MA-011,1,Local district commonly associated with this ZIP.,NCES GRF-style ZIP linkage (workshop sample),2023
+60618,IL-305,1,City district commonly associated with this ZIP.,NCES GRF-style ZIP linkage (workshop sample),2023
+30004,GA-129,1,County district commonly associated with this ZIP.,NCES GRF-style ZIP linkage (workshop sample),2023
+48105,MI-190,1,Local district commonly associated with this ZIP.,NCES GRF-style ZIP linkage (workshop sample),2023
+84037,UT-087,1,Local district commonly associated with this ZIP.,NCES GRF-style ZIP linkage (workshop sample),2023
+97005,OR-064,1,Local district commonly associated with this ZIP.,NCES GRF-style ZIP linkage (workshop sample),2023
+37027,TN-118,1,County district commonly associated with this ZIP.,NCES GRF-style ZIP linkage (workshop sample),2023
+63017,MO-055,1,Local district commonly associated with this ZIP.,NCES GRF-style ZIP linkage (workshop sample),2023
+53562,WI-041,1,Local district commonly associated with this ZIP.,NCES GRF-style ZIP linkage (workshop sample),2023
+89117,NV-132,1,City district commonly associated with this ZIP.,NCES GRF-style ZIP linkage (workshop sample),2023
+70001,LA-066,1,Parish district commonly associated with this ZIP.,NCES GRF-style ZIP linkage (workshop sample),2023
+35244,AL-039,1,City district commonly associated with this ZIP.,NCES GRF-style ZIP linkage (workshop sample),2023

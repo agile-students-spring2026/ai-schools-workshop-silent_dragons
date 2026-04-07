@@ -93,13 +93,16 @@ def test_district_and_school_pages_render() -> None:
 
 def test_district_overview_endpoint_and_filters() -> None:
     client = TestClient(app)
-    response = client.get("/districts/CA-001/overview?grade_band=high&school_type=High")
+    response = client.get("/districts/CA-001/overview?audience=parent&grade_band=high&school_type=High")
     assert response.status_code == 200
     payload = response.json()
     assert payload["district_id"] == "CA-001"
     assert payload["summary"]["parent"]
     assert all(item["school_type"] == "High" for item in payload["schools"])
     assert all("source_name" in metric for metric in payload["metrics"])
+    assert payload["map_preview"]["embed_url"]
+    assert payload["map_preview"]["source_name"]
+    assert payload["audience"] == "parent"
 
 
 def test_district_overview_not_found() -> None:
@@ -110,12 +113,18 @@ def test_district_overview_not_found() -> None:
 
 def test_school_detail_endpoint_success_and_not_found() -> None:
     client = TestClient(app)
-    ok_response = client.get("/schools/SCH-1002/detail")
+    ok_response = client.get("/schools/SCH-1002/detail?audience=parent")
     assert ok_response.status_code == 200
     payload = ok_response.json()
     assert payload["school_id"] == "SCH-1002"
     assert payload["fit_explanations"]["parent"]
     assert payload["qa"]["compare_to_district"]["citations"]
+    assert any(metric["label"] == "Students missing many school days" for metric in payload["metrics"])
+
+    educator_response = client.get("/schools/SCH-1002/detail?audience=educator")
+    assert educator_response.status_code == 200
+    educator_payload = educator_response.json()
+    assert any(metric["label"] == "Absenteeism" for metric in educator_payload["metrics"])
 
     not_found = client.get("/schools/NOPE/detail")
     assert not_found.status_code == 404

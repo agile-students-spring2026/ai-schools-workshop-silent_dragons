@@ -11,6 +11,11 @@ The current app shell supports:
 - district overview pages with source/year metric cards and school filters
 - school detail pages with grounded fit explanations and cited Q&A
 
+Audience modes are intentionally different:
+
+- **Parent mode** prioritizes student day-to-day fit: attendance stability, climate, and family-facing clarity.
+- **Educator mode** prioritizes planning context: student need, climate risk, and resource/intervention signals.
+
 - graduation and proficiency performance
 - safety signals
 - affordability proxy (free lunch share)
@@ -25,6 +30,17 @@ The API returns ranked district recommendations based on customizable priorities
 - `data/districts.csv`: workshop sample district metrics (modeled after common public education indicators).
 - `data/schools.csv`: workshop sample school directory records linked to district IDs.
 - `data/zip_districts.csv`: workshop sample ZIP-to-likely-district mapping with explicit `source_name` and `source_year` columns.
+- `data/district_geography.csv`: workshop-sampled district geocode extents used by the map preview.
+
+Reference source systems used for the schema and labeling:
+
+- NCES CCD: https://nces.ed.gov/ccd/
+- NCES EDGE: https://nces.ed.gov/programs/edge/
+- NCES GRF: https://nces.ed.gov/programs/edge/Geographic/DistrictBoundaries
+- Census SAIPE: https://www.census.gov/programs-surveys/saipe.html
+- Census F-33 (school finance): https://www.census.gov/programs-surveys/school-finances.html
+- EDFacts / ED Data Express: https://eddataexpress.ed.gov/
+- CRDC: https://ocrdata.ed.gov/
 
 Important: ZIP matches are shown as likely options, not guaranteed attendance assignments.
 

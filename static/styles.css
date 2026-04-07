@@ -17,6 +17,7 @@ body {
   margin: 0;
   background: radial-gradient(circle at top, #eef2ff, var(--bg) 45%);
   color: var(--text);
+  min-height: 100vh;
 }
 
 .container {
@@ -43,7 +44,11 @@ body {
 .subtitle {
   margin: 8px 0 0;
   color: var(--muted);
+<<<<<<< HEAD
+  font-size: 16px;
+=======
   font-size: 1.05rem;
+>>>>>>> b0463f5237c772d6c6b348cc7ed656c2aec2c56c
 }
 
 .panel {
@@ -61,6 +66,9 @@ body {
   gap: 14px;
 }
 
+<<<<<<< HEAD
+/* improved label styling */
+=======
 .audience-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
@@ -92,6 +100,22 @@ body {
   box-shadow: 0 0 0 3px #e0e7ff;
 }
 
+.lens-row {
+  display: flex;
+  gap: 10px;
+  margin-top: 8px;
+}
+
+.lens-btn {
+  font-size: 0.95rem;
+  padding: 8px 12px;
+  border-radius: 10px;
+}
+
+.lens-btn span {
+  display: none;
+}
+
 .search-label {
   display: block;
   margin-bottom: 10px;
@@ -119,25 +143,66 @@ body {
   font-size: 0.95rem;
 }
 
+>>>>>>> b0463f5237c772d6c6b348cc7ed656c2aec2c56c
 label {
   display: flex;
   flex-direction: column;
   font-size: 14px;
-  gap: 6px;
+  gap: 8px;
   color: #334155;
+  font-weight: 500;
 }
 
-input[type="range"],
+/* improved number inputs */
 input[type="number"] {
   width: 100%;
   border: 1px solid var(--line);
-  border-radius: 8px;
-  padding: 8px;
-  background: #fff;
+  border-radius: 12px;
+  padding: 12px 14px;
+  background: #f9fafb;
+  font-size: 15px;
+  color: var(--text);
+  transition: 0.2s ease;
 }
 
+input[type="number"]:focus {
+  outline: none;
+  border-color: var(--brand);
+  background: #ffffff;
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.15);
+}
+
+/* improved sliders */
 input[type="range"] {
-  padding: 0;
+  -webkit-appearance: none;
+  width: 100%;
+  height: 6px;
+  border-radius: 999px;
+  background: #e2e8f0;
+  outline: none;
+  margin: 6px 0;
+}
+
+input[type="range"]::-webkit-slider-runnable-track {
+  height: 6px;
+  border-radius: 999px;
+  background: #e2e8f0;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  height: 16px;
+  width: 16px;
+  border-radius: 50%;
+  background: var(--brand);
+  cursor: pointer;
+  margin-top: -5px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+  transition: 0.15s ease;
+}
+
+input[type="range"]::-webkit-slider-thumb:hover {
+  transform: scale(1.15);
 }
 
 .weight-row {
@@ -160,6 +225,7 @@ input[type="range"] {
   color: var(--brand);
 }
 
+/* button */
 #search_btn {
   border: 0;
   background: linear-gradient(135deg, #4f46e5, #7c3aed);
@@ -168,13 +234,19 @@ input[type="range"] {
   padding: 11px 16px;
   font-weight: 600;
   cursor: pointer;
+<<<<<<< HEAD
+  transition: 0.15s ease;
+=======
   white-space: nowrap;
+>>>>>>> b0463f5237c772d6c6b348cc7ed656c2aec2c56c
 }
 
 #search_btn:hover {
   filter: brightness(1.05);
+  transform: translateY(-1px);
 }
 
+/* results */
 .results-header {
   display: flex;
   justify-content: space-between;
@@ -206,6 +278,12 @@ input[type="range"] {
   padding: 12px 14px;
   margin-bottom: 12px;
   background: linear-gradient(180deg, #ffffff, #f8fbff);
+  transition: 0.15s ease;
+}
+
+.district-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.06);
 }
 
 .suggestion-card {
@@ -229,8 +307,13 @@ input[type="range"] {
   background: #eef2ff;
   color: #3730a3;
   border-radius: 999px;
+<<<<<<< HEAD
+  font-size: 12px;
+  padding: 5px 6px;
+=======
   padding: 4px 8px;
   font-size: 0.75rem;
+>>>>>>> b0463f5237c772d6c6b348cc7ed656c2aec2c56c
   font-weight: 700;
 }
 
@@ -253,6 +336,10 @@ input[type="range"] {
 
 .status {
   color: var(--muted);
+<<<<<<< HEAD
+  font-size: 14px;
+}
+=======
   font-size: 0.95rem;
 }
 
@@ -284,6 +371,14 @@ input[type="range"] {
   padding: 14px;
 }
 
+.map-frame {
+  width: 100%;
+  min-height: 280px;
+  border: 1px solid #cbd5e1;
+  border-radius: 10px;
+  margin-top: 8px;
+}
+
 .filter-row {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(180px, 240px));
@@ -308,3 +403,4 @@ a {
     grid-template-columns: 1fr;
   }
 }
+>>>>>>> b0463f5237c772d6c6b348cc7ed656c2aec2c56c

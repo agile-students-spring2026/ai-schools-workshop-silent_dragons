@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from app.models import District, School
+from app.models import District, DistrictGeography, School
 
 
 METRIC_SOURCES = {
@@ -17,12 +17,33 @@ METRIC_SOURCES = {
     "advanced_coursework": ("EDFacts (workshop sample)", 2023, "school"),
 }
 
+PARENT_LABELS = {
+    "enrollment": "Students enrolled",
+    "num_schools": "Schools in district",
+    "poverty_context": "Students needing financial support",
+    "per_pupil_spending": "Estimated spending per student",
+    "chronic_absenteeism": "Students missing many school days",
+    "graduation_rate": "Students graduating",
+    "climate_equity": "School environment support score",
+    "school_absenteeism": "Students missing many school days",
+    "school_outcomes": "Academic outcomes snapshot",
+    "school_climate": "School climate and belonging",
+    "advanced_coursework": "Access to advanced classes",
+}
 
-def _metric(metric_key: str, label: str, value: float | int | None, unit: str = "") -> dict:
+
+def _metric(
+    metric_key: str,
+    label: str,
+    value: float | int | None,
+    unit: str = "",
+    audience: str = "educator",
+) -> dict:
     source_name, source_year, level = METRIC_SOURCES[metric_key]
+    effective_label = PARENT_LABELS.get(metric_key, label) if audience == "parent" else label
     return {
         "metric_key": metric_key,
-        "label": label,
+        "label": effective_label,
         "value": value,
         "unit": unit,
         "source_name": source_name,
@@ -49,15 +70,21 @@ def _school_matches_grade_band(school: School, grade_band: str) -> bool:
     return "9" in span or "10" in span or "11" in span or "12" in span
 
 
-def _quick_flags(school: School) -> list[str]:
+def _quick_flags(school: School, audience: str) -> list[str]:
     flags: list[str] = []
     if school.absenteeism_pct is not None and school.absenteeism_pct > 15:
-        flags.append("Attendance watch")
+        flags.append("Attendance concern" if audience == "parent" else "Chronic absenteeism > 15%")
     if school.outcomes_index is not None and school.outcomes_index >= 75:
         flags.append("Strong outcomes")
     if school.climate_index is not None and school.climate_index < 60:
-        flags.append("Climate support needed")
+        flags.append("Climate concern" if audience == "parent" else "Climate index < 60")
     return flags or ["Data still loading"]
+
+
+def _audience_objective(audience: str) -> str:
+    if audience == "parent":
+        return "Parent mode helps families compare day-to-day experience, support, and fit."
+    return "Educator mode helps staff compare student-need context, resource pressure, and intervention signals."
 
 
 def _district_summary_parent(district_name: str, metrics: dict[str, float | int | None]) -> str:
@@ -69,24 +96,55 @@ def _district_summary_parent(district_name: str, metrics: dict[str, float | int 
     )
     return (
         f"{district_name} serves about {metrics['enrollment'] or 'unknown'} students across "
-        f"{metrics['num_schools'] or 'unknown'} schools. Graduation rate is "
-        f"{metrics['graduation_rate'] or 'not reported'}%, and chronic absenteeism is "
-        f"{metrics['chronic_absenteeism'] or 'not reported'}%.{missing_text}"
+        f"{metrics['num_schools'] or 'unknown'} schools. For a family decision, start with graduation "
+        f"({metrics['graduation_rate'] or 'not reported'}%), attendance stability "
+        f"({metrics['chronic_absenteeism'] or 'not reported'}% chronic absenteeism), and school climate."
+        f"{missing_text}"
     )
 
 
 def _district_summary_educator(district_name: str, metrics: dict[str, float | int | None]) -> str:
     return (
         f"{district_name} shows a poverty context indicator of {metrics['poverty_context'] or 'unknown'}% "
-        f"and estimated per-pupil spending of ${metrics['per_pupil_spending'] or 'not available'}. "
-        f"Use climate and attendance metrics together when planning supports."
+        f"with estimated per-pupil spending of ${metrics['per_pupil_spending'] or 'not available'}. "
+        f"For educator planning, prioritize attendance ({metrics['chronic_absenteeism'] or 'not reported'}%), "
+        f"climate/equity index ({metrics['climate_equity'] or 'not reported'}), and resource alignment."
     )
+
+
+def _map_preview_payload(geo: DistrictGeography | None, focus_cities: list[str]) -> dict:
+    if geo is None:
+        return {
+            "title": "Map preview",
+            "description": "District map coordinates are not available yet for this district.",
+            "focus_cities": focus_cities,
+            "embed_url": None,
+            "source_name": "Unavailable",
+            "source_year": None,
+        }
+
+    bbox = f"{geo.min_lon}%2C{geo.min_lat}%2C{geo.max_lon}%2C{geo.max_lat}"
+    marker = f"{geo.center_lat}%2C{geo.center_lon}"
+    embed_url = (
+        "https://www.openstreetmap.org/export/embed.html"
+        f"?bbox={bbox}&layer=mapnik&marker={marker}"
+    )
+    return {
+        "title": "Map preview",
+        "description": "Approximate district footprint preview from EDGE-style geocode context.",
+        "focus_cities": focus_cities,
+        "embed_url": embed_url,
+        "source_name": geo.source_name,
+        "source_year": geo.source_year,
+    }
 
 
 def district_overview_payload(
     district_id: str,
     districts: list[District],
     schools: list[School],
+    geographies: list[DistrictGeography],
+    audience: str = "parent",
     grade_band: str = "all",
     school_type: str = "all",
 ) -> dict:
@@ -120,32 +178,29 @@ def district_overview_payload(
             "enrollment": school.enrollment,
             "school_type": school.school_type,
             "charter_status": school.charter_status,
-            "quick_flags": _quick_flags(school),
+            "quick_flags": _quick_flags(school, audience),
         }
         for school in filtered_schools
     ]
 
     unique_cities = sorted({school.city for school in district_schools})
     locale = "Urban" if len(unique_cities) >= 3 else "Suburban"
+    geo = next((item for item in geographies if item.district_id == district_id), None)
 
     return {
         "district_id": district.district_id,
         "district_name": district.district_name,
         "state": district.state,
         "locale": locale,
-        "map_preview": {
-            "title": "Map preview",
-            "description": "Approximate district footprint preview based on EDGE-style geo context.",
-            "focus_cities": unique_cities,
-        },
+        "map_preview": _map_preview_payload(geo, unique_cities),
         "metrics": [
-            _metric("enrollment", "Enrollment", district_metrics_raw["enrollment"]),
-            _metric("num_schools", "Number of schools", district_metrics_raw["num_schools"]),
-            _metric("poverty_context", "Poverty context", district_metrics_raw["poverty_context"], "%"),
-            _metric("per_pupil_spending", "Per-pupil spending", district_metrics_raw["per_pupil_spending"], "$"),
-            _metric("chronic_absenteeism", "Chronic absenteeism", district_metrics_raw["chronic_absenteeism"], "%"),
-            _metric("graduation_rate", "Graduation rate", district_metrics_raw["graduation_rate"], "%"),
-            _metric("climate_equity", "Climate and equity index", district_metrics_raw["climate_equity"], "/100"),
+            _metric("enrollment", "Enrollment", district_metrics_raw["enrollment"], audience=audience),
+            _metric("num_schools", "Number of schools", district_metrics_raw["num_schools"], audience=audience),
+            _metric("poverty_context", "Poverty context", district_metrics_raw["poverty_context"], "%", audience=audience),
+            _metric("per_pupil_spending", "Per-pupil spending", district_metrics_raw["per_pupil_spending"], "$", audience=audience),
+            _metric("chronic_absenteeism", "Chronic absenteeism", district_metrics_raw["chronic_absenteeism"], "%", audience=audience),
+            _metric("graduation_rate", "Graduation rate", district_metrics_raw["graduation_rate"], "%", audience=audience),
+            _metric("climate_equity", "Climate and equity index", district_metrics_raw["climate_equity"], "/100", audience=audience),
         ],
         "schools": schools_payload,
         "filters": {
@@ -156,10 +211,26 @@ def district_overview_payload(
             "parent": _district_summary_parent(district.district_name, district_metrics_raw),
             "educator": _district_summary_educator(district.district_name, district_metrics_raw),
         },
+        "active_summary": (
+            _district_summary_parent(district.district_name, district_metrics_raw)
+            if audience == "parent"
+            else _district_summary_educator(district.district_name, district_metrics_raw)
+        ),
+        "audience": audience,
+        "audience_objective": _audience_objective(audience),
+        "audience_differences": {
+            "parent": "Prioritizes student experience, attendance, and day-to-day family fit.",
+            "educator": "Prioritizes student need context, resource planning, and climate supports.",
+        },
     }
 
 
-def school_detail_payload(school_id: str, districts: list[District], schools: list[School]) -> dict:
+def school_detail_payload(
+    school_id: str,
+    districts: list[District],
+    schools: list[School],
+    audience: str = "parent",
+) -> dict:
     school = next((item for item in schools if item.school_id == school_id), None)
     if school is None:
         raise ValueError("School not found")
@@ -189,21 +260,21 @@ def school_detail_payload(school_id: str, districts: list[District], schools: li
         "school_type": school.school_type,
         "charter_status": school.charter_status,
         "metrics": [
-            _metric("enrollment", "Enrollment", school.enrollment),
-            _metric("school_absenteeism", "Absenteeism", school.absenteeism_pct, "%"),
-            _metric("school_outcomes", "Outcomes index", school.outcomes_index, "/100"),
-            _metric("school_climate", "Climate index", school.climate_index, "/100"),
-            _metric("advanced_coursework", "Advanced coursework access", school.advanced_coursework_pct, "%"),
+            _metric("enrollment", "Enrollment", school.enrollment, audience=audience),
+            _metric("school_absenteeism", "Absenteeism", school.absenteeism_pct, "%", audience=audience),
+            _metric("school_outcomes", "Outcomes index", school.outcomes_index, "/100", audience=audience),
+            _metric("school_climate", "Climate index", school.climate_index, "/100", audience=audience),
+            _metric("advanced_coursework", "Advanced coursework access", school.advanced_coursework_pct, "%", audience=audience),
         ],
         "district_context": district_context,
         "fit_explanations": {
             "parent": (
-                f"{school.school_name} serves grades {school.grade_span}. Review attendance, climate, "
-                "and advanced coursework together for day-to-day student fit."
+                f"{school.school_name} serves grades {school.grade_span}. For families, check attendance "
+                "stability, climate indicators, and course access to judge everyday fit and support level."
             ),
             "educator": (
-                f"Use {school.school_name} attendance and climate trends with district poverty and "
-                "funding context when planning supports."
+                f"For educators, combine {school.school_name} attendance and climate trends with district "
+                "poverty and spending context to target interventions and program supports."
             ),
         },
         "qa": {
@@ -221,4 +292,6 @@ def school_detail_payload(school_id: str, districts: list[District], schools: li
             },
         },
         "missing_notes": missing_notes,
+        "audience": audience,
+        "audience_objective": _audience_objective(audience),
     }

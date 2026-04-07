@@ -13,6 +13,11 @@
         <p class="badge">District overview</p>
         <h1 id="district_title">District</h1>
         <p id="district_subtitle" class="subtitle">Loading district context...</p>
+        <div class="lens-row">
+          <button class="audience-btn active lens-btn" id="district_lens_parent" data-audience="parent">Parent</button>
+          <button class="audience-btn lens-btn" id="district_lens_educator" data-audience="educator">Educator</button>
+        </div>
+        <p id="lens_objective" class="helper-text"></p>
       </section>
 
       <section class="panel">
@@ -21,10 +26,12 @@
           <article class="result-card">
             <h3>Explain this district for a parent</h3>
             <p id="summary_parent" class="card-summary">Loading...</p>
+            <p id="summary_parent_mode" class="card-meta"></p>
           </article>
           <article class="result-card">
             <h3>Explain this district for a teacher</h3>
             <p id="summary_educator" class="card-summary">Loading...</p>
+            <p id="summary_educator_mode" class="card-meta"></p>
           </article>
         </div>
       </section>
