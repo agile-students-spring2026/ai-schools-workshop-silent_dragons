@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>District Insight</title>
+    <link rel="stylesheet" href="/static/styles.css" />
+  </head>
+  <body>
+    <main class="container">
+      <h1>District Insight</h1>
+      <p>Find school districts that best match your priorities.</p>
+
+      <section class="panel">
+        <h2>Filters</h2>
+        <div class="grid">
+          <label>Top results <input id="top_k" type="number" min="1" max="20" value="5" /></label>
+          <label>Min grad rate <input id="min_grad_rate" type="number" min="0" max="100" value="85" /></label>
+          <label>Max class ratio <input id="max_student_teacher_ratio" type="number" min="1" max="100" value="20" /></label>
+        </div>
+      </section>
+
+      <section class="panel">
+        <h2>Priority Weights</h2>
+        <div class="grid" id="weights"></div>
+        <button id="search_btn">Rank Districts</button>
+      </section>
+
+      <section class="panel">
+        <h2>Results</h2>
+        <div id="results"></div>
+      </section>
+    </main>
+    <script src="/static/app.js"></script>
+  </body>
+</html>
