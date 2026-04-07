@@ -65,3 +65,21 @@ docker run --rm -p 8000:8000 district-insight:latest
 ```
 
 This image can be deployed to any OCI-compatible host (for example, Render, Fly.io, GCP Cloud Run, or AWS App Runner).
+
+--
+# 1) Create virtual environment
+python3 -m venv .venv
+
+# 2) Activate it (Mac/zsh)
+source .venv/bin/activate
+
+# 3) Install dependencies (use the one your project has)
+# Option A:
+pip install -r requirements.txt
+# Option B:
+pip install -e .
+# If neither exists, install minimum:
+pip install fastapi uvicorn
+
+# 4) Run app
+uvicorn app.main:app --reload
