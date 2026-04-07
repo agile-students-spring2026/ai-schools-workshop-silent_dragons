@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>School Detail</title>
+    <link rel="stylesheet" href="/static/styles.css" />
+  </head>
+  <body>
+    <main class="container">
+      <section class="hero">
+        <a id="district_back_link" class="back-link" href="/">← Back to search</a>
+        <p class="badge">School detail</p>
+        <h1 id="school_title">School</h1>
+        <p id="school_subtitle" class="subtitle">Loading school context...</p>
+      </section>
+
+      <section class="panel">
+        <h2>Why this school may be a fit</h2>
+        <div class="summary-grid">
+          <article class="result-card">
+            <h3>Parent lens</h3>
+            <p id="fit_parent" class="card-summary">Loading...</p>
+          </article>
+          <article class="result-card">
+            <h3>Educator lens</h3>
+            <p id="fit_educator" class="card-summary">Loading...</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="panel">
+        <h2>School metrics</h2>
+        <div id="school_metrics" class="metric-grid"></div>
+      </section>
+
+      <section class="panel">
+        <h2>District context</h2>
+        <div id="district_context" class="result-card"></div>
+      </section>
+
+      <section class="panel">
+        <h2>Grounded AI Q&amp;A</h2>
+        <div id="qa_panel"></div>
+      </section>
+
+      <section class="panel">
+        <h2>Data notes</h2>
+        <p id="missing_notes" class="status">No missing data notes.</p>
+      </section>
+    </main>
+    <script src="/static/school.js"></script>
+  </body>
+</html>
