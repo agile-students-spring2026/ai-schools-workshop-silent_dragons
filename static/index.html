@@ -8,8 +8,11 @@
   </head>
   <body>
     <main class="container">
-      <h1>District Insight</h1>
-      <p>Find school districts that best match your priorities.</p>
+      <section class="hero">
+        <p class="badge">School District Decision Support</p>
+        <h1>District Insight</h1>
+        <p class="subtitle">Find school districts that best match your priorities.</p>
+      </section>
 
       <section class="panel">
         <h2>Filters</h2>
@@ -27,7 +30,10 @@
       </section>
 
       <section class="panel">
-        <h2>Results</h2>
+        <div class="results-header">
+          <h2>Results</h2>
+          <p id="results_count">0 districts</p>
+        </div>
         <div id="results"></div>
       </section>
     </main>
