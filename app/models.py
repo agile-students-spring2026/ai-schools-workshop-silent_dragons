@@ -59,3 +59,16 @@ class ZipDistrictSuggestion:
     why_it_matches: str
     source_name: str = "Unknown source"
     source_year: int | None = None
+
+
+@dataclass(frozen=True)
+class DistrictGeography:
+    district_id: str
+    center_lat: float
+    center_lon: float
+    min_lat: float
+    max_lat: float
+    min_lon: float
+    max_lon: float
+    source_name: str
+    source_year: int | None

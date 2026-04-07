@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import pytest
 
-from app.models import District, School
+from app.models import District, DistrictGeography, School
 from app.overview import (
     _avg,
     _quick_flags,
@@ -68,6 +68,22 @@ def sample_schools() -> list[School]:
     ]
 
 
+def sample_geographies() -> list[DistrictGeography]:
+    return [
+        DistrictGeography(
+            district_id="D-1",
+            center_lat=40.0,
+            center_lon=-75.0,
+            min_lat=39.9,
+            max_lat=40.1,
+            min_lon=-75.2,
+            max_lon=-74.8,
+            source_name="EDGE sample",
+            source_year=2023,
+        )
+    ]
+
+
 def test_avg_handles_empty_and_values() -> None:
     assert _avg([]) is None
     assert _avg([None, 10.0, 20.0]) == 15.0
@@ -83,9 +99,10 @@ def test_school_matches_grade_band() -> None:
 
 def test_quick_flags_branches() -> None:
     elementary, high = sample_schools()
-    assert _quick_flags(elementary) == ["Strong outcomes"]
-    assert "Attendance watch" in _quick_flags(high)
-    assert "Climate support needed" in _quick_flags(high)
+    assert _quick_flags(elementary, "parent") == ["Strong outcomes"]
+    parent_flags = _quick_flags(high, "parent")
+    assert "Attendance concern" in parent_flags
+    assert "Climate concern" in parent_flags
 
 
 def test_district_overview_payload_success_and_filters() -> None:
@@ -93,6 +110,7 @@ def test_district_overview_payload_success_and_filters() -> None:
         district_id="D-1",
         districts=[sample_district()],
         schools=sample_schools(),
+        geographies=sample_geographies(),
         grade_band="high",
         school_type="High",
     )
@@ -102,11 +120,24 @@ def test_district_overview_payload_success_and_filters() -> None:
     assert len(payload["metrics"]) == 7
     assert len(payload["schools"]) == 1
     assert payload["schools"][0]["school_id"] == "S-2"
+    assert payload["map_preview"]["embed_url"]
+    assert payload["audience_differences"]["parent"]
+    assert payload["audience_objective"]
 
 
 def test_district_overview_not_found() -> None:
     with pytest.raises(ValueError):
-        district_overview_payload("NOPE", [sample_district()], sample_schools())
+        district_overview_payload("NOPE", [sample_district()], sample_schools(), sample_geographies())
+
+
+def test_district_overview_map_fallback_when_geo_missing() -> None:
+    payload = district_overview_payload(
+        district_id="D-1",
+        districts=[sample_district()],
+        schools=sample_schools(),
+        geographies=[],
+    )
+    assert payload["map_preview"]["embed_url"] is None
 
 
 def test_school_detail_payload_success_and_missing_note() -> None:
@@ -120,6 +151,25 @@ def test_school_detail_payload_success_and_missing_note() -> None:
     assert len(payload["metrics"]) == 5
     assert payload["missing_notes"]
     assert payload["qa"]["what_stands_out"]["citations"]
+
+
+def test_audience_changes_labels_and_flags() -> None:
+    parent_payload = district_overview_payload(
+        district_id="D-1",
+        districts=[sample_district()],
+        schools=sample_schools(),
+        geographies=sample_geographies(),
+        audience="parent",
+    )
+    educator_payload = district_overview_payload(
+        district_id="D-1",
+        districts=[sample_district()],
+        schools=sample_schools(),
+        geographies=sample_geographies(),
+        audience="educator",
+    )
+    assert parent_payload["metrics"][0]["label"] != educator_payload["metrics"][0]["label"]
+    assert parent_payload["schools"][1]["quick_flags"] != educator_payload["schools"][1]["quick_flags"]
 
 
 def test_school_detail_errors() -> None:

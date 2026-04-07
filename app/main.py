@@ -6,7 +6,12 @@ from fastapi import FastAPI, HTTPException, Query
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 
-from app.data import load_districts, load_schools, load_zip_district_suggestions
+from app.data import (
+    load_district_geography,
+    load_districts,
+    load_schools,
+    load_zip_district_suggestions,
+)
 from app.models import Preferences
 from app.overview import district_overview_payload, school_detail_payload
 from app.search import search_catalog
@@ -102,6 +107,7 @@ def search(
 @app.get("/districts/{district_id}/overview")
 def district_overview(
     district_id: str,
+    audience: str = Query(default="parent", pattern="^(parent|educator)$"),
     grade_band: str = Query(default="all", pattern="^(all|elementary|middle|high)$"),
     school_type: str = Query(default="all", pattern="^(all|Elementary|Middle|High|Career)$"),
 ) -> dict:
@@ -110,6 +116,8 @@ def district_overview(
             district_id=district_id,
             districts=load_districts(),
             schools=load_schools(),
+            geographies=load_district_geography(),
+            audience=audience,
             grade_band=grade_band,
             school_type=school_type,
         )
@@ -118,12 +126,16 @@ def district_overview(
 
 
 @app.get("/schools/{school_id}/detail")
-def school_detail(school_id: str) -> dict:
+def school_detail(
+    school_id: str,
+    audience: str = Query(default="parent", pattern="^(parent|educator)$"),
+) -> dict:
     try:
         return school_detail_payload(
             school_id=school_id,
             districts=load_districts(),
             schools=load_schools(),
+            audience=audience,
         )
     except ValueError as error:
         raise HTTPException(status_code=404, detail=str(error)) from error

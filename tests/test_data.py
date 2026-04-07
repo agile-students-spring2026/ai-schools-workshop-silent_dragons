@@ -4,9 +4,11 @@ from pathlib import Path
 
 from app.data import (
     load_districts,
+    load_district_geography,
     load_schools,
     load_zip_district_suggestions,
     to_district,
+    to_district_geography,
     to_school,
     to_zip_district_suggestion,
 )
@@ -115,3 +117,34 @@ def test_load_zip_district_suggestions_reads_csv(tmp_path: Path) -> None:
     assert len(suggestions) == 1
     assert suggestions[0].district_id == "YY-2"
     assert suggestions[0].source_name == "NCES GRF"
+
+
+def test_to_district_geography_casts_fields() -> None:
+    item = to_district_geography(
+        {
+            "district_id": "YY-2",
+            "center_lat": "40.1",
+            "center_lon": "-75.2",
+            "min_lat": "39.9",
+            "max_lat": "40.3",
+            "min_lon": "-75.4",
+            "max_lon": "-75.0",
+            "source_name": "EDGE",
+            "source_year": "2023",
+        }
+    )
+    assert item.district_id == "YY-2"
+    assert item.source_name == "EDGE"
+    assert item.source_year == 2023
+
+
+def test_load_district_geography_reads_csv(tmp_path: Path) -> None:
+    file = tmp_path / "district_geography.csv"
+    file.write_text(
+        "district_id,center_lat,center_lon,min_lat,max_lat,min_lon,max_lon,source_name,source_year\n"
+        "YY-2,40.1,-75.2,39.9,40.3,-75.4,-75.0,EDGE,2023\n",
+        encoding="utf-8",
+    )
+    items = load_district_geography(file)
+    assert len(items) == 1
+    assert items[0].district_id == "YY-2"

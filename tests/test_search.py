@@ -73,3 +73,23 @@ def test_search_catalog_general_gibberish_returns_empty() -> None:
     assert payload["intent"] == "general"
     assert payload["districts"] == []
     assert payload["schools"] == []
+
+
+def test_search_catalog_audience_changes_district_summary() -> None:
+    parent_payload = search_catalog(
+        query="Palo Alto Unified",
+        audience="parent",
+        districts=load_districts(),
+        schools=load_schools(),
+        zip_suggestions=load_zip_district_suggestions(),
+    )
+    educator_payload = search_catalog(
+        query="Palo Alto Unified",
+        audience="educator",
+        districts=load_districts(),
+        schools=load_schools(),
+        zip_suggestions=load_zip_district_suggestions(),
+    )
+    assert parent_payload["districts"]
+    assert educator_payload["districts"]
+    assert parent_payload["districts"][0]["summary"] != educator_payload["districts"][0]["summary"]

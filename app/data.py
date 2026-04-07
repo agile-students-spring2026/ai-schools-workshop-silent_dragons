@@ -3,12 +3,13 @@ from __future__ import annotations
 import csv
 from pathlib import Path
 
-from app.models import District, School, ZipDistrictSuggestion
+from app.models import District, DistrictGeography, School, ZipDistrictSuggestion
 
 
 DATA_PATH = Path(__file__).resolve().parent.parent / "data" / "districts.csv"
 SCHOOLS_PATH = Path(__file__).resolve().parent.parent / "data" / "schools.csv"
 ZIP_SUGGESTIONS_PATH = Path(__file__).resolve().parent.parent / "data" / "zip_districts.csv"
+DISTRICT_GEOGRAPHY_PATH = Path(__file__).resolve().parent.parent / "data" / "district_geography.csv"
 
 
 def load_districts(path: Path = DATA_PATH) -> list[District]:
@@ -78,6 +79,27 @@ def to_zip_district_suggestion(row: dict[str, str]) -> ZipDistrictSuggestion:
         district_id=row["district_id"],
         likelihood_rank=int(row["likelihood_rank"]),
         why_it_matches=row["why_it_matches"],
+        source_name=row.get("source_name", "Unknown source"),
+        source_year=int(source_year_raw) if source_year_raw else None,
+    )
+
+
+def load_district_geography(path: Path = DISTRICT_GEOGRAPHY_PATH) -> list[DistrictGeography]:
+    with path.open("r", encoding="utf-8", newline="") as file:
+        rows = list(csv.DictReader(file))
+    return [to_district_geography(row) for row in rows]
+
+
+def to_district_geography(row: dict[str, str]) -> DistrictGeography:
+    source_year_raw = row.get("source_year", "").strip()
+    return DistrictGeography(
+        district_id=row["district_id"],
+        center_lat=float(row["center_lat"]),
+        center_lon=float(row["center_lon"]),
+        min_lat=float(row["min_lat"]),
+        max_lat=float(row["max_lat"]),
+        min_lon=float(row["min_lon"]),
+        max_lon=float(row["max_lon"]),
         source_name=row.get("source_name", "Unknown source"),
         source_year=int(source_year_raw) if source_year_raw else None,
     )

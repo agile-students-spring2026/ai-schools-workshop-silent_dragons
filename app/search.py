@@ -17,13 +17,27 @@ def _district_cities(schools: list[School]) -> dict[str, set[str]]:
     return cities
 
 
-def _district_card(district: District, cities: set[str]) -> dict:
+def _district_card(district: District, cities: set[str], audience: str) -> dict:
     city_text = ", ".join(sorted(cities)) if cities else "Multiple communities"
+    if audience == "parent":
+        summary = (
+            f"Family view: graduation is {district.grad_rate:.0f}%, class size is about "
+            f"{district.student_teacher_ratio:.0f}:1, and safety incidents are {district.safety_incidents_per_1000:.1f} per 1,000 students."
+        )
+        focus = ["Student experience", "Daily attendance", "Safety and support"]
+    else:
+        summary = (
+            f"Educator view: poverty context is {district.free_lunch_pct:.0f}%, diversity index is "
+            f"{district.diversity_index:.2f}, and special-ed support rating is {district.special_ed_rating:.1f}/10."
+        )
+        focus = ["Student need context", "Resource planning", "Instructional climate"]
+
     return {
         "district_id": district.district_id,
         "title": district.district_name,
         "subtitle": f"{district.state} • Serves {city_text}",
-        "summary": "District profile match. Summary metrics will appear here in the next release.",
+        "summary": summary,
+        "focus_for": focus,
         "plain_language_metrics": [
             to_plain_language_label("grad_rate"),
             to_plain_language_label("student_teacher_ratio"),
@@ -32,7 +46,16 @@ def _district_card(district: District, cities: set[str]) -> dict:
     }
 
 
-def _school_card(school: School) -> dict:
+def _school_card(school: School, audience: str) -> dict:
+    if audience == "parent":
+        summary = (
+            "Family view: this card emphasizes attendance, climate, and grade-span fit to support day-to-day decision making."
+        )
+    else:
+        summary = (
+            "Educator view: this card emphasizes student-need, outcomes, and climate signals for planning supports."
+        )
+
     return {
         "school_id": school.school_id,
         "title": school.school_name,
@@ -41,7 +64,7 @@ def _school_card(school: School) -> dict:
         ),
         "district_id": school.district_id,
         "district_name": school.district_name,
-        "summary": "School profile match. Outcome and climate metrics can be added here.",
+        "summary": summary,
     }
 
 
@@ -116,22 +139,22 @@ def search_catalog(
             fuzzy_match(district.district_name, district_term)
             or fuzzy_match(city_blob, district_term)
         ):
-            district_cards.append(_district_card(district, cities))
+            district_cards.append(_district_card(district, cities, audience))
 
     for school in schools:
         searchable = f"{school.school_name} {school.city} {school.district_name}"
         if intent in {"school", "general", "city", "district"} and fuzzy_match(searchable, school_term):
-            school_cards.append(_school_card(school))
+            school_cards.append(_school_card(school, audience))
 
     if intent == "zip" and suggestion_cards:
         zip_district_ids = {item["district_id"] for item in suggestion_cards}
         district_cards = [
-            _district_card(districts_by_id[district_id], district_city_index.get(district_id, set()))
+            _district_card(districts_by_id[district_id], district_city_index.get(district_id, set()), audience)
             for district_id in zip_district_ids
             if district_id in districts_by_id
         ]
         school_cards = [
-            _school_card(school) for school in schools if school.district_id in zip_district_ids
+            _school_card(school, audience) for school in schools if school.district_id in zip_district_ids
         ]
 
     if intent == "zip" and not suggestion_cards:

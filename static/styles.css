@@ -92,6 +92,22 @@ body {
   box-shadow: 0 0 0 3px #e0e7ff;
 }
 
+.lens-row {
+  display: flex;
+  gap: 10px;
+  margin-top: 8px;
+}
+
+.lens-btn {
+  font-size: 0.95rem;
+  padding: 8px 12px;
+  border-radius: 10px;
+}
+
+.lens-btn span {
+  display: none;
+}
+
 .search-label {
   display: block;
   margin-bottom: 10px;
@@ -282,6 +298,14 @@ input[type="range"] {
   border-radius: 12px;
   background: #f8fafc;
   padding: 14px;
+}
+
+.map-frame {
+  width: 100%;
+  min-height: 280px;
+  border: 1px solid #cbd5e1;
+  border-radius: 10px;
+  margin-top: 8px;
 }
 
 .filter-row {

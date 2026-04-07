@@ -3,6 +3,16 @@ function schoolIdFromPath() {
   return parts[1] || "";
 }
 
+const urlParams = new URLSearchParams(window.location.search);
+let selectedAudience = urlParams.get("audience") === "educator" ? "educator" : "parent";
+
+function syncAudienceButtons() {
+  const buttons = [...document.querySelectorAll(".lens-btn")];
+  buttons.forEach((button) => {
+    button.classList.toggle("active", button.dataset.audience === selectedAudience);
+  });
+}
+
 function metricValue(metric) {
   if (metric.value === null || metric.value === undefined) {
     return "Not available";
@@ -35,11 +45,12 @@ function qaCard(title, payload) {
 
 async function loadSchool() {
   const schoolId = schoolIdFromPath();
+  history.replaceState({}, "", `/school/${schoolId}?audience=${selectedAudience}`);
   const metricsRoot = document.getElementById("school_metrics");
   metricsRoot.innerHTML = `<p class="status">Loading school metrics...</p>`;
 
   try {
-    const response = await fetch(`/schools/${schoolId}/detail`);
+    const response = await fetch(`/schools/${schoolId}/detail?audience=${selectedAudience}`);
     if (!response.ok) {
       throw new Error("Unable to load school");
     }
@@ -50,6 +61,8 @@ async function loadSchool() {
       `${payload.city}, ${payload.state} • ${payload.school_type} • Grades ${payload.grade_span}`;
     document.getElementById("fit_parent").textContent = payload.fit_explanations.parent;
     document.getElementById("fit_educator").textContent = payload.fit_explanations.educator;
+    document.getElementById("school_lens_objective").textContent = payload.audience_objective;
+    syncAudienceButtons();
 
     metricsRoot.innerHTML = payload.metrics.map(metricCard).join("");
 
@@ -70,10 +83,19 @@ async function loadSchool() {
     document.getElementById("missing_notes").textContent = payload.missing_notes.length
       ? payload.missing_notes.join(" ")
       : "No missing data notes.";
-    document.getElementById("district_back_link").href = `/district/${payload.district_id}`;
+    document.getElementById("district_back_link").href =
+      `/district/${payload.district_id}?audience=${selectedAudience}`;
   } catch (_error) {
     metricsRoot.innerHTML = `<p class="status">Unable to load school detail right now.</p>`;
   }
 }
 
+document.getElementById("school_lens_parent").addEventListener("click", () => {
+  selectedAudience = "parent";
+  loadSchool();
+});
+document.getElementById("school_lens_educator").addEventListener("click", () => {
+  selectedAudience = "educator";
+  loadSchool();
+});
 loadSchool();

@@ -1,4 +1,9 @@
-let selectedAudience = "parent";
+const pageParams = new URLSearchParams(window.location.search);
+let selectedAudience = pageParams.get("audience") === "educator" ? "educator" : "parent";
+
+function audienceQuery() {
+  return `?audience=${encodeURIComponent(selectedAudience)}`;
+}
 
 function renderResults(payload) {
   const root = document.getElementById("results");
@@ -27,7 +32,7 @@ function renderResults(payload) {
             (item) => `
               <article class="result-card suggestion-card">
                 <div class="card-title-row">
-                  <h4><a href="/district/${item.district_id}">${item.district_name}</a></h4>
+                  <h4><a href="/district/${item.district_id}${audienceQuery()}">${item.district_name}</a></h4>
                   <span class="pill">Likely #${item.likelihood_rank}</span>
                 </div>
                 <p class="card-subtitle">${item.state} • ${item.district_id}</p>
@@ -50,12 +55,13 @@ function renderResults(payload) {
             (district) => `
               <article class="result-card">
                 <div class="card-title-row">
-                  <h4><a href="/district/${district.district_id}">${district.title}</a></h4>
+                  <h4><a href="/district/${district.district_id}${audienceQuery()}">${district.title}</a></h4>
                   <span class="pill">District</span>
                 </div>
                 <p class="card-subtitle">${district.subtitle}</p>
                 <p class="card-summary">${district.summary}</p>
-                <p class="card-meta">Coming soon: ${district.plain_language_metrics.join(" • ")}</p>
+                <p class="card-meta">Focus in this mode: ${district.focus_for.join(" • ")}</p>
+                <p class="card-meta">Metrics available: ${district.plain_language_metrics.join(" • ")}</p>
               </article>
             `
           )
@@ -78,7 +84,7 @@ function renderResults(payload) {
             (school) => `
               <article class="result-card">
                 <div class="card-title-row">
-                  <h4><a href="/school/${school.school_id}">${school.title}</a></h4>
+                  <h4><a href="/school/${school.school_id}${audienceQuery()}">${school.title}</a></h4>
                   <span class="pill">School</span>
                 </div>
                 <p class="card-subtitle">${school.subtitle}</p>
@@ -125,15 +131,29 @@ async function runSearch() {
 
 function wireAudienceButtons() {
   const buttons = [...document.querySelectorAll(".audience-btn")];
+  const selectedButton = buttons.find((item) => item.dataset.audience === selectedAudience);
+  if (selectedButton) {
+    buttons.forEach((item) => item.classList.remove("active"));
+    selectedButton.classList.add("active");
+  }
+  document.getElementById("audience_goal").textContent =
+    selectedAudience === "parent"
+      ? "Parent mode: compare daily student experience, support, and family fit."
+      : "Educator mode: compare student-need context, climate risk, and planning signals.";
+
   buttons.forEach((button) => {
     button.addEventListener("click", () => {
       selectedAudience = button.dataset.audience;
       buttons.forEach((item) => item.classList.remove("active"));
       button.classList.add("active");
+      document.getElementById("audience_goal").textContent =
+        selectedAudience === "parent"
+          ? "Parent mode: compare daily student experience, support, and family fit."
+          : "Educator mode: compare student-need context, climate risk, and planning signals.";
       document.getElementById("helper_text").textContent =
         selectedAudience === "parent"
-          ? "Parent mode selected. Search by ZIP, city, district, or school."
-          : "Educator mode selected. Search by ZIP, city, district, or school.";
+          ? "Parent mode selected. Search by ZIP, city, district, or school to evaluate family fit."
+          : "Educator mode selected. Search by ZIP, city, district, or school to evaluate support needs.";
     });
   });
 }
